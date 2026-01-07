@@ -1,4 +1,4 @@
-export type user = {
+export type User = {
   id: number;
   displayName: string;
   email: string;
@@ -6,7 +6,7 @@ export type user = {
   imageUrl?: string;
 };
 
-export type loginCreds = {
+export type LoginCreds = {
   email: string;
   password: string;
 };
