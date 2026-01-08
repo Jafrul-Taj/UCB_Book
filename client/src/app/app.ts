@@ -3,19 +3,21 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 import { Nav } from "../layout/nav/nav";
 import { AccountService } from '../core/services/account-service';
+import { Home } from "../features/home/home";
+import { User } from '../types/user';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.css',
-  imports: [Nav]
+  imports: [Nav, Home]
 })
 export class App implements  OnInit{
   
   private accountService = inject(AccountService);
   private http = inject(HttpClient);
   protected readonly title = signal('Ucb Book');
-  protected members = signal<any>([]);
+  protected members = signal<User[]>([]);
 
 
   async ngOnInit() {
@@ -34,7 +36,7 @@ export class App implements  OnInit{
    async getMembers() {
    try {
 
-    return  lastValueFrom(this.http.get('https://localhost:5001/api/members'));
+    return  lastValueFrom(this.http.get<User[]>('https://localhost:5001/api/members'));
 
    } catch (err) {
      console.error('Failed to fetch members', err);
