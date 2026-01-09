@@ -3,14 +3,14 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 import { Nav } from "../layout/nav/nav";
 import { AccountService } from '../core/services/account-service';
-import { Home } from "../features/home/home";
 import { User } from '../types/user';
+import { Router, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.css',
-  imports: [Nav, Home]
+  imports: [Nav,RouterOutlet]
 })
 export class App implements  OnInit{
   
@@ -18,7 +18,7 @@ export class App implements  OnInit{
   private http = inject(HttpClient);
   protected readonly title = signal('Ucb Book');
   protected members = signal<User[]>([]);
-
+  protected router=inject(Router);
 
   async ngOnInit() {
     this.setCurrentUser();
