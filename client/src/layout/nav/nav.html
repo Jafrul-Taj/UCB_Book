@@ -28,6 +28,10 @@
             <a routerLink="/lists" routerLinkActive="text-accent">Lists</a>
             <a routerLink="/messages" routerLinkActive="text-accent">Messages</a> -->
         </nav>
+        @if(busyService.busyRequestCount() >0){
+            <span class="loading loading-spinner text-accent"></span>
+        }
+
         <div class="flex align-middle ml-auto gap-3">
             <div class="dropdown mr-5 dropdown-end">
                 <button tabindex="1" class="flex flex-col justify-center align-middle
