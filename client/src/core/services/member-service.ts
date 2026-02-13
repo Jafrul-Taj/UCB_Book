@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { EditableMember, Member, Photo } from '../../types/member';
+import { EditableMember, Member, MemberParams, Photo } from '../../types/member';
 import { environment } from '../../environments/environment';
 import { tap } from 'rxjs';
 import { PaginatedResult } from '../../types/pagination';
@@ -13,12 +13,24 @@ export class MemberService {
   private baseUrl = environment.apiUrl; // Adjust the base URL as needed
   editMode = signal(false);
   member = signal<Member | null>(null);
-  gerMembers(pageNumber=1 , pageSize = 5) {
-    let params = new HttpParams();
-    params = params.append('pageNumber', pageNumber);
-    params = params.append('pageSize', pageSize);
 
-    return this.http.get<PaginatedResult<Member>>(this.baseUrl + 'members',{params});
+
+  gerMembers(memberParams: MemberParams) {
+    let params = new HttpParams();
+    params = params.append('pageNumber', memberParams.pageNumber);
+    params = params.append('pageSize', memberParams.pageSize);
+    params = params.append('minAge', memberParams.minAge);
+    params = params.append('maxAge', memberParams.maxAge);
+    params = params.append('orderBy', memberParams.orderBy);
+
+
+    if(memberParams.gender) params = params.append('gender',memberParams.gender);
+
+    return this.http.get<PaginatedResult<Member>>(this.baseUrl + 'members',{params}).pipe(
+      tap(() => {
+        localStorage.setItem('filters',JSON.stringify(memberParams));
+      })
+    );
   }
 
   getMember(id: string) {
