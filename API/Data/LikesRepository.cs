@@ -1,5 +1,6 @@
 using System;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +29,30 @@ public class LikesRepository(AppDbContext context) : ILikesRepository
     public async Task<MemberLike?> GetMemberLike(string sourceMemberId, string targetMemberId)
     {
         return await context.Likes.FindAsync(sourceMemberId, targetMemberId);
+    }
+
+    public async Task<PaginatedResult<Member>> GetMemberLikes(LikesParams likesParams)
+    {
+        var query = context.Likes.AsQueryable();
+        IQueryable<Member> result;
+
+        switch (likesParams.Predicate)
+        {
+            case "liked"   : result = query.Where(like =>like.SourceMeberId == likesParams.MemberId)
+                                        .Select(like => like.TargetMember);
+                                        break;
+            case "likedBy" : result = query.Where(like => like.TaregtMemberId == likesParams.MemberId)
+                                           .Select(like => like.SourceMember);
+                                        break;
+            default:        var likeIds = await GetCurrentMemberLikeIds(likesParams.MemberId);
+                            result = query.Where(x => x.TaregtMemberId == likesParams.MemberId
+                                        && likeIds.Contains(x.SourceMeberId))
+                                        .Select(x => x.SourceMember);
+                                        break;
+
+        }
+
+        return await PaginationHelper.CreateAsync(result, likesParams.PageNumber, likesParams.PageSize);
     }
 
     public async Task<IReadOnlyList<Member>> GetMemberLikes(string predicate, string memberId)
