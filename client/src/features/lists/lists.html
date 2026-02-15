@@ -5,7 +5,7 @@
                 @for(tab of tabs; track $index){
                     <button role="tab" class="tab"
                             [class.tab-active]="predicate === tab.value"
-                            (click)="setPredicate(tab.label)"
+                            (click)="setPredicate(tab.value)"
                     >
                         {{tab.label}}
                     </button>
