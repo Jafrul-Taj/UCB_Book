@@ -1,6 +1,7 @@
 using System;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Helpers;
 using API.Interfaces;
 
@@ -23,9 +24,25 @@ public class MessageRepository(AppDbContext context) : IMessageRepository
         return await context.Messages.FindAsync(messageId);
     }
 
-    public Task<PaginatedResult<MessageDto>> GetMessagesForMember()
+    public async Task<PaginatedResult<MessageDto>> GetMessagesForMember(MessageParams 
+                                                                            messageParams)
     {
-        throw new NotImplementedException();
+        var query = context.Messages
+            .OrderByDescending(m => m.MessageSent)
+            .AsQueryable();
+            
+        query = messageParams.Container switch
+        {
+            // "Inbox" => query.Where(u => u.RecipientId == messageParams.MemberId 
+            //                             && u.RecipientDeleted == false),
+            "Outbox" => query.Where(u => u.SenderId == messageParams.MemberId),
+            _ => query.Where(u => u.RecipientId == messageParams.MemberId )
+        };
+
+        var messagesQuery = query.Select(MessageExtensions.ToDtoProjection());
+
+        return await PaginationHelper.CreateAsync(messagesQuery, messageParams.PageNumber, 
+                        messageParams.PageSize);
     }
 
     public Task<IReadOnlyList<MessageDto>> GetMessageThread(string currentUserId, string recipientUserId)
