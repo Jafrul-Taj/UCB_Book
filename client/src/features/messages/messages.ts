@@ -3,10 +3,12 @@ import { MessageService } from '../../core/services/message-service';
 import { PaginatedResult } from '../../types/pagination';
 import { Message } from '../../types/message';
 import { Paginator } from "../../shared/paginator/paginator";
+import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-messages',
-  imports: [Paginator],
+  imports: [Paginator,RouterLink,DatePipe],
   templateUrl: './messages.html',
   styleUrl: './messages.css',
 })
@@ -14,6 +16,7 @@ export class Messages implements OnInit {
   private messageService = inject(MessageService);
 
   protected container = 'Inbox';
+  protected fetchedContainer = 'Inbox';
   protected pageNumber = 1;
   protected pageSize = 10;
 
@@ -32,12 +35,13 @@ export class Messages implements OnInit {
     this.messageService.getMessages(this.container, this.pageNumber, this.pageSize).subscribe({
       next: paginatedMessages => {
         this.paginatedMessages.set(paginatedMessages);
+        this.fetchedContainer = this.container;
       }
     });
   }
 
   get isInbox(){
-    return this.container === 'Inbox';
+    return this.fetchedContainer === 'Inbox';
   }
 
   
