@@ -4,6 +4,7 @@ using API.Entities;
 using API.Extensions;
 using API.Helpers;
 using API.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
@@ -45,9 +46,22 @@ public class MessageRepository(AppDbContext context) : IMessageRepository
                         messageParams.PageSize);
     }
 
-    public Task<IReadOnlyList<MessageDto>> GetMessageThread(string currentUserId, string recipientUserId)
+    public async Task<IReadOnlyList<MessageDto>> GetMessageThread(string currentUserId, string recipientUserId)
     {
-        throw new NotImplementedException();
+        await context.Messages
+            .Where(x => x.RecipientId == currentUserId && x.SenderId == recipientUserId 
+                        && x.DateRead == null)
+            .ExecuteUpdateAsync(setter => setter
+                    .SetProperty(m => m.DateRead, DateTime.UtcNow));
+            
+
+        return await context.Messages
+            .Where(m => (m.RecipientId == currentUserId && m.SenderId == recipientUserId) ||
+                        (m.SenderId == currentUserId && m.RecipientId == recipientUserId))
+            .OrderBy(m => m.MessageSent)
+            .Select(MessageExtensions.ToDtoProjection())
+            .ToListAsync();
+        
     }
 
     public async Task<bool> SaveAllAsync()
