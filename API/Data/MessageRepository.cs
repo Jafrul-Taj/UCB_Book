@@ -20,7 +20,7 @@ public class MessageRepository(AppDbContext context) : IMessageRepository
         context.Messages.Remove(message);
     }
 
-    public async Task<Message?> GetMessage(int messageId)
+    public async Task<Message?> GetMessage(string messageId)
     {
         return await context.Messages.FindAsync(messageId);
     }
@@ -36,8 +36,10 @@ public class MessageRepository(AppDbContext context) : IMessageRepository
         {
             // "Inbox" => query.Where(u => u.RecipientId == messageParams.MemberId 
             //                             && u.RecipientDeleted == false),
-            "Outbox" => query.Where(u => u.SenderId == messageParams.MemberId),
-            _ => query.Where(u => u.RecipientId == messageParams.MemberId )
+            "Outbox" => query.Where(u => u.SenderId == messageParams.MemberId 
+                            && u.SenderDeleted == false),
+            _ => query.Where(u => u.RecipientId == messageParams.MemberId 
+                        && u.RecipientDeleted == false)
         };
 
         var messagesQuery = query.Select(MessageExtensions.ToDtoProjection());
