@@ -58,8 +58,10 @@ public class MessageRepository(AppDbContext context) : IMessageRepository
             
 
         return await context.Messages
-            .Where(m => (m.RecipientId == currentUserId && m.SenderId == recipientUserId) ||
-                        (m.SenderId == currentUserId && m.RecipientId == recipientUserId))
+            .Where(m => (m.RecipientId == currentUserId && m.RecipientDeleted == false 
+                        && m.SenderId == recipientUserId) 
+                    || (m.SenderId == currentUserId && m.SenderDeleted == false 
+                        && m.RecipientId == recipientUserId))
             .OrderBy(m => m.MessageSent)
             .Select(MessageExtensions.ToDtoProjection())
             .ToListAsync();
