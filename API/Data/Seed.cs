@@ -33,9 +33,8 @@ public class Seed
                 Id=member.Id,
                 Email = member.Email,
                 DisplayName = member.DisplayName,
+                UserName = member.Email,
                 ImageUrl = member.ImageUrl,
-                PasswordHash= hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$w0rd")),
-                PasswordSalt = hmac.Key,
                 Member = new Member
                 {
                     Id= member.Id,
