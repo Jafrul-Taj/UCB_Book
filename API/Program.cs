@@ -33,7 +33,10 @@ builder.Services.AddScoped<ILikesRepository, LikesRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.Configure<CloudinarySettings>(builder.Configuration
                 .GetSection("CloudinarySettings"));
-
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"))
+    .AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin","Moderator"));
+    
 builder.Services.AddIdentityCore<AppUser>(opt =>{
     opt.Password.RequireNonAlphanumeric = false;
     opt.User.RequireUniqueEmail = true;
