@@ -1,10 +1,12 @@
 using System.Text;
 using API.Data;
+using API.Entities;
 using API.Helpers;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -21,6 +23,23 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddCors();
+
+
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
+builder.Services.AddScoped<LogUserActivity>();
+builder.Services.AddScoped<ILikesRepository, LikesRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.Configure<CloudinarySettings>(builder.Configuration
+                .GetSection("CloudinarySettings"));
+
+builder.Services.AddIdentityCore<AppUser>(opt =>{
+    opt.Password.RequireNonAlphanumeric = false;
+    opt.User.RequireUniqueEmail = true;
+}).AddRoles<IdentityRole>()
+  .AddEntityFrameworkStores<AppDbContext>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
@@ -35,15 +54,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                ValidateAudience =false  
             };
         });
-
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IMemberRepository, MemberRepository>();
-builder.Services.AddScoped<IPhotoService, PhotoService>();
-builder.Services.AddScoped<LogUserActivity>();
-builder.Services.AddScoped<ILikesRepository, LikesRepository>();
-builder.Services.AddScoped<IMessageRepository, MessageRepository>();
-builder.Services.Configure<CloudinarySettings>(builder.Configuration
-                .GetSection("CloudinarySettings"));
 var app = builder.Build();
 
 
