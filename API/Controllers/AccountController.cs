@@ -69,8 +69,8 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
         var refreshToken = Request.Cookies["refreshToken"];
         if(refreshToken == null) return NoContent();
 
-        var user = await userManager.Users.FirstOrDefaultAsync(x => x.RefreshToken == refreshToken
-            && x.RefreshTokenExpiry > DateTime.UtcNow);
+        var user = await userManager.Users.FirstOrDefaultAsync(x => x.RefrashToken == refreshToken
+            && x.RefrashTokenExpiry > DateTime.UtcNow);
 
         if(user == null) return Unauthorized();
         await SetRefreshTokenCookie(user);
@@ -80,8 +80,8 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
    private async Task SetRefreshTokenCookie(AppUser user)
     {
         var refreshToken = tokenService.GenerateRefreshToken();
-        user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+        user.RefrashToken = refreshToken;
+        user.RefrashTokenExpiry = DateTime.UtcNow.AddDays(7);
         await userManager.UpdateAsync(user);
 
 

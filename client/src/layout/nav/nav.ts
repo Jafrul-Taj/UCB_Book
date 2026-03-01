@@ -53,6 +53,7 @@ export class Nav implements OnInit {
   }
 
   logout() {
+    localStorage.removeItem('filters');
     this.accountService.logout();
     this.router.navigateByUrl('/');
   }
