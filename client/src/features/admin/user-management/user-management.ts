@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, Signal } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, signal, Signal, ViewChild } from '@angular/core';
 import { AdminService } from '../../../core/services/admin-service';
 import { User } from '../../../types/user';
 
@@ -9,9 +9,11 @@ import { User } from '../../../types/user';
   styleUrl: './user-management.css',
 })
 export class UserManagement implements OnInit {
-  
+  @ViewChild('rolesModal') rolesModal!: ElementRef<HTMLDialogElement>;
   private adminService = inject(AdminService);
   protected users= signal<User[]> ([]);
+  protected availableRoles: string[] = ['Admin', 'Moderator', 'Member'];
+  protected selectedUser: User | null = null;
 
   ngOnInit(): void {
     this.getUsersWithRoles();
@@ -20,8 +22,12 @@ export class UserManagement implements OnInit {
     this.adminService.getUsersWithRoles().subscribe({
       next: users =>{
         this.users.set(users);
-        console.log(users);
       } 
     })
+  }
+
+  openRolesModal(user: User) {
+    this.selectedUser = user;
+    this.rolesModal.nativeElement.showModal();
   }
 }
