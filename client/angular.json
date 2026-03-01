@@ -27,6 +27,9 @@
           },"@schematics/angular:pipe": {
             "skipTests": true,
             "path": "src/core/pipes"
+          },"@schematics/angular:directive": {
+            "skipTests": true,
+            "path": "src/shared/directives"
           }
       },
       "root": "",
@@ -110,5 +113,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "8a39baca-d229-4ac2-9095-7b194c457dfe"
   }
 }
