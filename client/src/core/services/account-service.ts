@@ -15,7 +15,8 @@ export class AccountService {
    private baseUrl = environment.apiUrl;
 
   register(creds: RegisterCreds) {
-    return this.http.post<User>(this.baseUrl + 'account/register', creds, { withCredentials: true }).pipe(
+    return this.http.post<User>(this.baseUrl + 'account/register', creds, 
+      { withCredentials: true }).pipe(
       tap(user => {
         if(user){
           this.setCurrentUser(user);
@@ -39,11 +40,12 @@ export class AccountService {
           this.logout();
         }
       });
-    },5*60*1000);
+    },10*1000);
   }
 
   login(creds: LoginCreds) {
-    return this.http.post<User>(this.baseUrl + 'account/login', creds, { withCredentials: true }).pipe(
+    return this.http.post<User>(this.baseUrl + 'account/login', creds, 
+      { withCredentials: true }).pipe(
       tap(user => {
         if(user){
          this.setCurrentUser(user);
