@@ -38,6 +38,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             };
         });
 
+builder.Services.AddAuthorizationBuilder()
+        .AddPolicy("RequiredAdminRole", policy => policy.RequireRole("Admin"))
+        .AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
+
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
