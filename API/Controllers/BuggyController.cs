@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -28,4 +29,13 @@ public class BuggyController : BaseApiController
     {
         return BadRequest("This is not a good request");
     }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("admin-secret")]
+    public ActionResult<string> GetSecretAdmin()
+    {
+        return Ok("This is a secret message for Admins only!");
+        
+    }
+
 }
