@@ -22,7 +22,7 @@ public class AdminController(UserManager<AppUser> userManager) : BaseApiControll
             userList.Add(new
             {
                  user.Id,
-                 user.UserName,
+                 user.Email,
                  Roles = roles.ToList()
             });
         }
