@@ -28,7 +28,9 @@
             <legend class="fieldset-legend">Select Roles</legend>
             @for(role of availableRoles; track $index){
                 <label class="fieldset-label">
-                    <input type="checkbox" 
+                    <input
+                        (change)="toggleRole($event, role)" 
+                        type="checkbox" 
                         [checked]="selectedUser?.roles?.includes(role)"
                         class="checkbox"
                         [disabled]="selectedUser?.email === 'admin@test.com' && role === 'Admin'"
@@ -38,7 +40,7 @@
             }  
         </fieldset>
         <div class="modal-action">
-            <button class="btn btn-primary" >Submit</button>
+            <button (click)="updateRoles()" class="btn btn-primary" >Submit</button>
         </div>
     </div>
     <form method="dialog" class="modal-backdrop">
