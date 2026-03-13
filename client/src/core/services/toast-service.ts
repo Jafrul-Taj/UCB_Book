@@ -1,5 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import { isNotFound } from '@angular/core/primitives/di';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -24,6 +23,7 @@ export class ToastService {
       avater?:string, route?:string) {
     const toastContainer = document.getElementById('toast-container');
     if (!toastContainer) return;
+    const avatarSrc = avater || '/user.png';
     
     const toast = document.createElement('div');
     toast.classList.add('alert', alertClass,'shadow-lg','flex',
@@ -36,7 +36,7 @@ export class ToastService {
     }
     
       toast.innerHTML = `
-      ${avater ? `<img src=${avater || '/user.png'} class='w-10 h-10 rounded' ` : ''}
+      <img src="${avatarSrc}" alt="User avatar" class="w-10 h-10 rounded-full object-cover" />
       <span>${message}</span>
       <button class="ml-4 btn btn-sn btn-ghost">X</button>
     `
