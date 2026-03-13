@@ -7,4 +7,7 @@ public class Group(string name)
 {
     [Key]
     public  string Name { get; set; } = name;
+
+    //navigation property
+    public ICollection<Connection> Connections { get; set; }=[];
 }
