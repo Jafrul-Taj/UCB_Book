@@ -21,7 +21,8 @@ export class AccountService {
     return this.http.post<User>(this.baseUrl + 'account/register', creds, {withCredentials:true}).pipe(
       tap(user => {
         if(user){
-          this.setCurrentUser(user)
+          this.setCurrentUser(user);
+          this.startTokenRefreshIntervar();
         }
       })
     );
@@ -29,18 +30,35 @@ export class AccountService {
 
 
   login(creds: LoginCreds) {
-    return this.http.post<User>(this.baseUrl + 'account/login', creds,{withCredentials:true}).pipe(
+    return this.http.post<User>(this.baseUrl + 'account/login', creds, {withCredentials:true}).pipe(
       tap(user => {
         if(user){
-         this.setCurrentUser(user)
+         this.setCurrentUser(user);
+         this.startTokenRefreshIntervar();
         }
       })
     );
   }
 
+  refreahToken(){
+    return this.http.post<User>(this.baseUrl + 'account/refresh-token', {}, {withCredentials:true})
+  }
+
+  startTokenRefreshIntervar(){
+    setInterval(()=> {
+      this.http.post<User>(this.baseUrl + 'account/refresh-token', {}, {withCredentials:true}).subscribe({
+        next: user => {
+          this.setCurrentUser(user);
+        },
+        error: () => {
+          this.logout();
+        }
+      })
+    },5* 60*1000)
+  }
+
   setCurrentUser(user: User){
     user.roles = this.getRolesFromToken(user);
-    localStorage.setItem('user',JSON.stringify(user));
     this.currentUser.set(user);
     this.likesService.getLikeIds();
     console.log(this.presenceService.hubConnection?.state);
@@ -49,7 +67,6 @@ export class AccountService {
     }
   }
   logout(){
-    localStorage.removeItem('user');
     localStorage.removeItem('filters');
     this.likesService.clearLikeIds();
     this.currentUser.set(null);
